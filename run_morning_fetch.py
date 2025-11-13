@@ -1,4 +1,4 @@
-#Last Updated 11-13-25-3:20pm
+#Last Updated 11-13-25-3:45pm
 
 import os
 import json
@@ -65,55 +65,40 @@ def build_system_prompt() -> str:
 INDIAN LAND AND LANCASTER CONTENT ASSISTANT
 
 Mission
-Create original hyper local style content for Indian Land SC, the Lancaster County panhandle and Lancaster SC. Focus on real estate, development, infrastructure, schools, retail, taxes and community changes that affect residents of this primary territory.
-
-Important note
-You do not have live web browsing. You are creating plausible, realistic local style content for marketing and education, not strict breaking news reports. Use common patterns of growth and development in suburban areas like Indian Land and Lancaster. Make details sound realistic and grounded, but do not talk about votes or dates as if you just watched them happen on live TV.
+You are given real local articles about Indian Land SC, the Lancaster County panhandle and Lancaster SC.
+Your job is to turn each article into one piece of content with:
+- a strong but honest title
+- a neighbor style reels script
+- an emoji forward caption
+- a clear SEO friendly blog post
 
 Territory rules
-Primary and only focus: Indian Land SC, the Lancaster County panhandle and Lancaster SC.
-Do not center stories in Fort Mill, Rock Hill, York County or Charlotte unless the core activity is physically happening inside the primary territory.
+Primary focus: Indian Land SC, the Lancaster County panhandle and Lancaster SC.
+If an article is not about this territory or does not clearly affect it, do not try to force it. If the article is clearly outside this area, reply with an empty JSON object {}.
 
-Story count rules
-Aim to return three to five stories in the stories array.
-If you can only form one or two strong ideas that fit the territory, return those. Quality is more important than count.
-You may write different useful angles on the same general theme, such as:
-- one story focused on a corridor or area upgrade
-- one story focused on traffic or commute changes
-- one story focused on neighborhood and real estate impact
-
-Time window
-Treat the content as current and relevant to this year.
-You do not need exact calendar dates. Focus on what is useful now for residents and buyers.
-
-Approved topics
-Growth, development, zoning, new construction, roads, transportation, schools, taxes, business openings, retail changes, parks, amenities, community expansions and housing related shifts.
-
-Exclude
-National headlines.
-Crime.
-Accidents.
-Fear content.
-Scraper blogs.
-Anything not clearly tied to Indian Land, the Lancaster County panhandle or Lancaster SC.
+Facts and safety
+Use only the information in the provided article plus safe, obvious implications.
+Do not invent specific projects, votes, square footage, names, dates or dollar amounts that are not in the article.
+You may generalize or simplify details, but do not add new facts.
 
 Output format
-Return one JSON object only. No commentary. No markdown. No explanation.
+For each article you will be asked to return one JSON object only.
+No commentary.
+No markdown.
+No explanation.
 
-JSON must match:
+Each story JSON must match:
 
 {
-  "stories": [
-    {
-      "title": "string",
-      "reels_script": "string",
-      "caption": "string",
-      "blog_title": "string",
-      "blog_post": "string",
-      "Source_URL": "string (optional)"
-    }
-  ]
+  "title": "string",
+  "reels_script": "string",
+  "caption": "string",
+  "blog_title": "string",
+  "blog_post": "string",
+  "Source_URL": "string"
 }
+
+Source_URL should be the article URL provided by the user.
 
 --------------------------------------------------
 TITLE RULES
@@ -121,7 +106,7 @@ Eight to twelve words.
 Sentence case.
 Clear and factual.
 No clickbait.
-No hype.
+No hype terms.
 --------------------------------------------------
 
 --------------------------------------------------
@@ -142,7 +127,7 @@ Line 4: One short sentence naming exactly where it is happening (Indian Land or 
 
 Line 5: Empty line.
 
-Line 6: One sentence with a clear number, dollar amount, date, size, count or other measurable stat. Numbers should be realistic for this region.
+Line 6: One sentence with a clear number, dollar amount, date, size, count or other measurable stat from the article. Numbers should be realistic and based on the article.
 
 Line 7: Empty line.
 
@@ -181,7 +166,7 @@ Rules:
 
 Caption structure:
 Line 1: Emoji + strong hook.
-Line 2: Emoji + key fact.
+Line 2: Emoji + key fact from the article.
 Line 3: Emoji + local impact for Indian Land or Lancaster.
 Line 4: Emoji + why it matters for homeowners, buyers or sellers.
 Line 5: Emoji + helpful detail or timing note.
@@ -198,8 +183,10 @@ Thinking about buying, building, investing or selling?
 
 Hashtag rules:
 The hashtags must be on the line directly under the save line with no extra blank line between.
-Start with relevant local tags like #indianland or #lancastersc when they match the story.
-Then always include these three static tags at the end, in this order:
+Use #indianland when the story is about Indian Land.
+Use #lancastersc when the story is about Lancaster.
+For other tags you may add one or two relevant local tags before the three static ones.
+Always include these three static tags at the end, in this order:
 #itstartsathome #hgpg #realbrokerllc
 --------------------------------------------------
 
@@ -219,8 +206,8 @@ Do not write one large block of text.
 No section headers.
 
 Paragraph structure:
-1. One or two sentences that say what happened and where. Mention Indian Land or the Lancaster County panhandle.
-2. Two or three sentences with specific details. Include at least one measurable detail such as a number, dollar amount, size, date, traffic count, capacity, enrollment or similar. Numbers should be realistic for the area.
+1. One or two sentences that say what happened and where. Mention Indian Land or the Lancaster County panhandle if the article supports that.
+2. Two or three sentences with specific details. Include at least one measurable detail such as a number, dollar amount, size, date, traffic count, capacity, enrollment or similar. Use numbers that are present or clearly supported by the article.
 3. Two or three sentences about daily life and community impact. Explain how this change affects traffic, schools, services, shopping, parks or quality of life for local residents.
 4. Two or three sentences about the real estate angle. Explain how this may affect demand, supply, prices, neighborhood appeal or timing for buyers and sellers.
 5. Two or three sentences with a clear forward looking insight for the next year or two. Help residents understand what to watch for next.
@@ -234,23 +221,23 @@ Do not sound like a government statement or corporate press release.
 Make it readable and helpful.
 
 SEO guidelines:
-Use local keywords naturally.
-Include at least two concrete local stats, numbers, counts or specific details.
+Use local keywords naturally when they match the article.
+Include at least two concrete local stats, numbers, counts or specific details from the article.
 Do not include CTAs in the blog.
-Do not include URLs.
-Do not mention publisher names.
+Do not include URLs in the blog body.
+Do not mention publisher names in the blog body.
 --------------------------------------------------
 
 Source_URL
-You may leave Source_URL empty or omit it if there is no specific source link. These stories are for marketing and education, not strict citation.
+Source_URL must be set to the article URL provided in the user prompt.
 
 Plagiarism distance
 Rewrite everything using new sentence structure and new pacing.
-Do not mirror real article sentences.
+Do not mirror article sentences.
 """
 
 
-def call_claude_for_stories() -> dict:
+def call_claude_for_article(article: dict) -> dict:
     api_key = get_env("ANTHROPIC_API_KEY")
     system_prompt = build_system_prompt()
 
@@ -260,16 +247,58 @@ def call_claude_for_stories() -> dict:
         "content-type": "application/json"
     }
 
+    article_title = article.get("title", "").strip()
+    article_url = article.get("url", "").strip()
+    article_source = article.get("source", "").strip()
+    article_published = article.get("published", "").strip()
+    article_content = article.get("content", "").strip()
+
+    user_prompt = f"""
+You are given a single real local article.
+
+ARTICLE TITLE:
+{article_title}
+
+ARTICLE URL:
+{article_url}
+
+ARTICLE SOURCE:
+{article_source}
+
+ARTICLE PUBLISHED:
+{article_published}
+
+ARTICLE CONTENT:
+{article_content}
+
+Using only the information above and safe, obvious implications, create one JSON object for a story that follows all style and formatting rules from the system prompt.
+
+Return only one JSON object with this exact shape:
+
+{{
+  "title": "string",
+  "reels_script": "string",
+  "caption": "string",
+  "blog_title": "string",
+  "blog_post": "string",
+  "Source_URL": "{article_url}"
+}}
+
+Do not add extra keys.
+Do not wrap it in markdown.
+Do not add any text before or after the JSON.
+"""
+
     body = {
         "model": "claude-3-5-haiku-20241022",
-        "max_tokens": 6000,
+        "max_tokens": 5000,
         "system": system_prompt,
         "messages": [
-            {"role": "user", "content": "Fetch"}
+            {"role": "user", "content": user_prompt}
         ]
     }
 
-    response = requests.post(ANTHROPIC_API_URL, headers=headers, json=body, timeout=45)
+    response = requests.post(ANTHROPIC_API_URL, headers=headers, json=body, timeout=60)
 
     if response.status_code >= 300:
         raise RuntimeError(f"Claude API error: {response.status_code} {response.text}")
@@ -283,25 +312,20 @@ def call_claude_for_stories() -> dict:
 
     cleaned = clean_json_text(raw_text)
 
+    if not cleaned.strip():
+        raise RuntimeError("Claude returned empty content for article.")
+
     try:
-        parsed = json.loads(cleaned)
+        story = json.loads(cleaned)
     except Exception as e:
         raise RuntimeError(
-            f"Claude returned non-parseable JSON.\nRaw cleaned text:\n{cleaned}\nError: {e}"
+            f"Claude returned non-parseable JSON for one article.\nRaw cleaned text:\n{cleaned}\nError: {e}"
         )
 
-    if "stories" not in parsed or not isinstance(parsed["stories"], list):
-        raise RuntimeError(f"JSON missing stories array: {parsed}")
+    if not isinstance(story, dict):
+        raise RuntimeError(f"Claude JSON for one article is not an object: {story}")
 
-    if not parsed["stories"]:
-        raise RuntimeError("JSON contains an empty stories array.")
-
-    # Enforce paragraph spacing on blogs
-    for story in parsed["stories"]:
-        if isinstance(story, dict) and isinstance(story.get("blog_post"), str):
-            story["blog_post"] = format_blog_paragraphs(story["blog_post"])
-
-    return parsed
+    return story
 
 
 def send_to_make(payload: dict) -> None:
@@ -312,9 +336,42 @@ def send_to_make(payload: dict) -> None:
 
 
 def main() -> None:
-    stories = call_claude_for_stories()
-    send_to_make(stories)
-    print(f"Sent {len(stories.get('stories', []))} stories to Make.")
+    articles_json = os.getenv("ARTICLES_JSON", "").strip()
+    if not articles_json:
+        raise RuntimeError("ARTICLES_JSON env var is empty. This workflow expects real articles JSON from Atlas/Make.")
+
+    try:
+        articles_payload = json.loads(articles_json)
+    except Exception as e:
+        raise RuntimeError(f"Could not parse ARTICLES_JSON. Value:\n{articles_json}\nError: {e}")
+
+    articles = articles_payload.get("articles", [])
+    if not isinstance(articles, list) or not articles:
+        raise RuntimeError(f"ARTICLES_JSON.articles is missing or empty: {articles_payload}")
+
+    stories = []
+
+    for idx, article in enumerate(articles, start=1):
+        if not isinstance(article, dict):
+            continue
+        story = call_claude_for_article(article)
+
+        # Skip if the model chose to return an empty object {}
+        if not story:
+            continue
+
+        # Enforce blog paragraph spacing
+        if isinstance(story.get("blog_post"), str):
+            story["blog_post"] = format_blog_paragraphs(story["blog_post"])
+
+        stories.append(story)
+
+    if not stories:
+        raise RuntimeError("No valid stories were generated from the provided articles.")
+
+    payload = {"stories": stories}
+    send_to_make(payload)
+    print(f"Sent {len(stories)} stories to Make.")
 
 
 if __name__ == "__main__":
