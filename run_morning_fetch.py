@@ -1,4 +1,4 @@
-#Last Updated 11-13-25-3:05pm
+#Last Updated 11-13-25-3:20pm
 
 import os
 import json
@@ -188,16 +188,18 @@ Line 5: Emoji + helpful detail or timing note.
 Line 6: Credit line (no emoji). Example:
 Source: Lancaster News
 
-Then this exact CTA block:
+Then this exact CTA block, with no blank line between the last CTA line and the hashtags:
 
 Thinking about buying, building, investing or selling?
 👉 DM me
 📲 Text Brian 704-677-9191
 📌🔁 Save this for later and share with a friend who needs to see it.
+#indianland #lancastersc #itstartsathome #hgpg #realbrokerllc
 
-Final line: hashtags only.
+Hashtag rules:
+The hashtags must be on the line directly under the save line with no extra blank line between.
 Start with relevant local tags like #indianland or #lancastersc when they match the story.
-Then always append these three, in this order:
+Then always include these three static tags at the end, in this order:
 #itstartsathome #hgpg #realbrokerllc
 --------------------------------------------------
 
