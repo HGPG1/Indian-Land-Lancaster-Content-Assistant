@@ -5,6 +5,11 @@ on:
     # Runs every day at 10:00 UTC, about 5:00am Eastern
     - cron: "0 10 * * *"
   workflow_dispatch:
+    inputs:
+      articles_json:
+        description: "JSON payload of articles from Atlas/Make"
+        required: false
+        type: string
 
 jobs:
   fetch-and-send:
@@ -28,5 +33,6 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          ARTICLES_JSON: ${{ github.event.inputs.articles_json }}
         run: |
           python run_morning_fetch.py
