@@ -1,4 +1,4 @@
-#Last Updated 11-13-25-1:20pm
+#Last Updated 11-13-25-2:30pm
 
 import os
 import json
@@ -24,6 +24,44 @@ def clean_json_text(text: str) -> str:
     return text
 
 
+def format_blog_paragraphs(text: str) -> str:
+    """
+    Enforce paragraph spacing for blog posts.
+    If the model returns a single block, split into short paragraphs.
+    """
+    if not text:
+        return text
+
+    # Normalize line endings
+    text = text.replace("\r\n", "\n").strip()
+
+    # If it already has blank-line paragraphs, keep them
+    if "\n\n" in text:
+        return text
+
+    # Rough sentence split
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    sentences = [s.strip() for s in sentences if s.strip()]
+
+    if not sentences:
+        return text
+
+    # Group sentences into paragraphs of 2–3 sentences
+    paragraphs = []
+    current = []
+
+    for s in sentences:
+        current.append(s)
+        if len(current) >= 3:
+            paragraphs.append(" ".join(current))
+            current = []
+
+    if current:
+        paragraphs.append(" ".join(current))
+
+    return "\n\n".join(paragraphs)
+
+
 def build_system_prompt() -> str:
     return """
 INDIAN LAND AND LANCASTER CONTENT ASSISTANT
@@ -34,7 +72,12 @@ Create original hyper local content for Indian Land SC, the Lancaster County pan
 Territory rules
 Primary and only focus: Indian Land SC, the Lancaster County panhandle and Lancaster SC.
 Do not include stories centered in Fort Mill, Rock Hill, York County or Charlotte unless the core activity is physically happening inside the primary territory.
-If fewer than three real stories qualify, return fewer. Do not relax territory rules.
+
+Story count rules
+You should aim to return three to five stories in the stories array.
+Never invent fake events or made up news.
+Use only real, plausible information that can be supported by the underlying source material.
+If you only find one or two qualifying real news items, you may create additional stories by focusing on different practical angles of the same confirmed event. For example, one story can focus on the overall project, one on traffic and commute, and one on neighborhood or real estate impact. All stories must stay within the real facts and reasonable implications of the confirmed event. Do not add facts you do not know and do not create imaginary projects.
 
 Time window
 Prefer stories from the last seventy two hours.
@@ -75,6 +118,7 @@ Eight to twelve words.
 Sentence case.
 Clear and factual.
 No clickbait.
+No hype.
 --------------------------------------------------
 
 --------------------------------------------------
@@ -85,7 +129,7 @@ Never remove the blank lines.
 Never merge lines.
 No emojis anywhere in the reels script.
 
-Line 1: A friendly, relatable hook like you are standing with a neighbor at a backyard BBQ. Keep it real and conversational. Examples of tone: “Here’s something folks around Indian Land have been talking about,” “You might have seen this happening around 521,” “Neighbors have been asking about this one,” “You probably heard a little buzz about this.”
+Line 1: A friendly, relatable hook like you are standing with a neighbor at a backyard BBQ. Use plain words. Make it feel like real conversation. Examples of tone only (do not copy): "Here is something folks around Indian Land have been talking about.", "You might have seen this starting to take shape along 521.", "Neighbors keep asking about this one.", "If you live anywhere near 521, you will notice this."
 
 Line 2: Empty line.
 
@@ -95,13 +139,13 @@ Line 4: One short sentence naming exactly where it is happening (Indian Land or 
 
 Line 5: Empty line.
 
-Line 6: One sentence with a measurable stat, number, dollar amount, date or project size.
+Line 6: One sentence with a clear number, dollar amount, date, size, count or other measurable stat.
 
 Line 7: Empty line.
 
 Line 8: One short sentence about how this affects daily life for Indian Land or Lancaster residents.
 
-Line 9: One short sentence about why this matters for buyers, sellers or investors.
+Line 9: One short sentence about why this matters for buyers, sellers or investors in the area.
 
 Line 10: Empty line.
 
@@ -112,10 +156,11 @@ Line 14: Click follow to get the latest scoop without the hassle.
 
 Tone rules for reels
 Talk like a neighbor at a cookout.
-Use everyday words.
+Use everyday language.
 Short sentences only.
-No formal phrasing such as “infrastructure investment,” “strategic initiative,” “significant transformation,” “proactive approach,” “robust growth,” “comprehensive overview,” “represents an opportunity,” “developing a framework.”
-No press release or news anchor tone.
+Avoid formal words and phrases such as: "infrastructure investment", "strategic initiative", "significant transformation", "proactive approach", "robust growth", "comprehensive plan", "represents an opportunity", "economic hub".
+Avoid news anchor language.
+Do not sound like a government press release.
 Keep it simple, human and local.
 --------------------------------------------------
 
@@ -129,7 +174,7 @@ Rules:
 🚗 🏡 📈 📉 💰 🔨 🚧 🌟 💡 📍 ✨ 👉 📲 📌 🔁 🏗️ 🛍️
 - Emojis only at the start of lines, not inside the lines.
 - One newline between each line.
-- Keep lines short and direct.
+- Lines short and direct.
 
 Caption structure:
 Line 1: Emoji + strong hook.
@@ -137,7 +182,8 @@ Line 2: Emoji + key fact.
 Line 3: Emoji + local impact for Indian Land or Lancaster.
 Line 4: Emoji + why it matters for homeowners, buyers or sellers.
 Line 5: Emoji + helpful detail or timing note.
-Line 6: Credit line (no emoji): Example: Source: Lancaster News
+Line 6: Credit line (no emoji). Example:
+Source: Lancaster News
 
 Then this exact CTA block:
 
@@ -147,7 +193,7 @@ Thinking about buying, building, investing or selling?
 📌🔁 Save this for later and share with a friend who needs to see it.
 
 Final line: hashtags only.
-Start with relevant local tags like #indianland #lancastersc.
+Start with relevant local tags like #indianland or #lancastersc when they match the story.
 Then always append these three, in this order:
 #itstartsathome #hgpg #realbrokerllc
 --------------------------------------------------
@@ -156,28 +202,36 @@ Then always append these three, in this order:
 BLOG TITLE
 Eight to fourteen words.
 Title Case.
-Include local keywords naturally (Indian Land, Lancaster County, Highway 521, the panhandle).
+Include local keywords naturally (Indian Land, Lancaster County, Highway 521, the panhandle) when they fit.
 --------------------------------------------------
 
 --------------------------------------------------
-BLOG POST – SEO OPTIMIZED
+BLOG POST – SEO OPTIMIZED AND HUMAN
 Three hundred fifty to five hundred words.
-Multiple short paragraphs.
+Aim for about four hundred to four hundred fifty words.
+Use multiple short paragraphs separated by a single blank line between each paragraph.
+Do not write one large block of text.
 No section headers.
 
 Paragraph structure:
-1. What happened and where. One or two sentences naming Indian Land or Lancaster County.
-2. At least one specific measurable detail: number, project size, dollar amount, date, population, traffic count, square footage, capacity, enrollment, etc.
-3. Wider community impact: how this affects daily life, traffic, services, schools, retail or amenities.
-4. Real estate angle: supply, demand, home values, neighborhood appeal.
-5. Forward looking insight: what residents should expect in the next year or two.
+1. One or two sentences that say what happened and where. Mention Indian Land or the Lancaster County panhandle.
+2. Two or three sentences with specific details. Include at least one measurable detail such as a number, dollar amount, size, date, traffic count, capacity, enrollment or similar.
+3. Two or three sentences about daily life and community impact. Explain how this change affects traffic, schools, services, shopping, parks or quality of life for local residents.
+4. Two or three sentences about the real estate angle. Explain how this may affect demand, supply, prices, neighborhood appeal or timing for buyers and sellers.
+5. Two or three sentences with a clear forward looking insight for the next year or two. Help residents understand what to watch for next.
+
+Tone for blogs:
+Sound like a local real estate expert explaining the news to a client.
+Use plain, clear language.
+Use short sentences.
+Avoid formal phrases like: "significant commercial development", "strategic growth pattern", "positioning the area as a key economic hub", "represents a proactive approach", "robust investment", "in summary", "overall", "moreover".
+Do not sound like a government statement or corporate press release.
+Make it readable and helpful.
 
 SEO guidelines:
 Use local keywords naturally.
-Use simple language.
-Use short sentences.
-Include two or more specific local stats, numbers, counts or details.
-Do not include CTAs.
+Include at least two concrete local stats, numbers, counts or specific details.
+Do not include CTAs in the blog.
 Do not include URLs.
 Do not mention publisher names.
 --------------------------------------------------
@@ -190,6 +244,7 @@ Plagiarism distance
 Rewrite everything using new sentence structure and new pacing.
 Never mirror article sentences.
 """
+
 
 def call_claude_for_stories() -> dict:
     api_key = get_env("ANTHROPIC_API_KEY")
@@ -236,6 +291,15 @@ def call_claude_for_stories() -> dict:
 
     if not parsed["stories"]:
         raise RuntimeError("JSON contains an empty stories array.")
+
+    # Enforce paragraph spacing on blogs
+    for story in parsed["stories"]:
+        if isinstance(story, dict) and isinstance(story.get("blog_post"), str):
+            story["blog_post"] = format_blog_paragraphs(story["blog_post"])
+
+    # Optional guard: fail if fewer than 3 stories
+    if len(parsed["stories"]) < 3:
+        raise RuntimeError(f"Model returned fewer than 3 stories: {len(parsed['stories'])}")
 
     return parsed
 
