@@ -1,4 +1,4 @@
-#Last Updated 11-13-25-11:20am
+#Last Updated 11-13-25-11:55am
 
 import os
 import json
@@ -16,9 +16,10 @@ def get_env(name: str) -> str:
 
 
 def clean_json_text(text: str) -> str:
-    # Remove all control characters that cause JSONDecodeError
+    """
+    Strip control characters that can break json.loads.
+    """
     text = re.sub(r"[\x00-\x1F\x7F]", "", text)
-    # Remove null bytes if present
     text = text.replace("\u0000", "")
     return text
 
@@ -33,7 +34,7 @@ Create original hyper local content for Indian Land, the Lancaster County panhan
 Territory rules
 Primary and only focus: Indian Land SC, the Lancaster County panhandle and Lancaster SC.
 Skip stories centered on Fort Mill, Rock Hill, York County or Charlotte unless the main location is inside the primary territory.
-If fewer than three stories qualify, return fewer.
+If fewer than three stories qualify, return fewer stories. Do not relax territory rules.
 
 Time window
 Prefer stories from the last seventy two hours.
@@ -52,6 +53,8 @@ Anything not clearly tied to the primary territory.
 
 Output format
 Return one JSON object only. No prose. No markdown. No explanation.
+
+The JSON must match this structure:
 
 {
   "stories": [
@@ -72,86 +75,117 @@ Title
 Eight to twelve words.
 Sentence case.
 Clear and factual.
+No clickbait.
 
 Reels script
 One hundred twenty to one hundred fifty words.
-Start with a strong hook sentence but do not label it.
-Use short paragraphs.
-Use contractions.
-Safe emojis only: 🔥 ⚡ 🔔 🏡 📈 📉 🛑 🚧 🎉 🌟 💡 🏗️ 🛍️ 📍 ✨ 👉 📲
-Include at least one stat or measurable detail.
-Do not include URLs or publisher names.
+Tone: conversational, like you are talking to a neighbor at a cookout, but still professional and informed.
+No emojis in the reels script.
+No section headers.
 
-End with this block:
+Structure and spacing:
+- First line: strong hook sentence.
+- Blank line.
+- Two short sentences explaining what happened and where.
+- Blank line.
+- One sentence that includes a measurable stat, number or specific detail.
+- Blank line.
+- Two short sentences about impact for Indian Land or Lancaster residents.
+- Blank line.
+- CTA block on separate lines.
 
-Living in or looking to move to Indian Land or Lancaster? I have you covered. I am Brian McCarron, your local realtor. Click follow to get the latest scoop without the hassle.
+Use contractions where natural.
+Short sentences.
+No URLs.
+No publisher names.
 
-Caption
-More emojis and easy spacing.
+End every reels script with this exact CTA block, on separate lines:
 
-Ten to twelve lines.
-Lines one through five must include at least one emoji.
-Lines one and two may use two or three emojis.
-Single newline between each line.
-Short punchy lines.
+Living in or looking to move to Indian Land or Lancaster?
+I have you covered.
+I am Brian McCarron, your local realtor.
+Click follow to get the latest scoop without the hassle.
+
+Instagram caption
+Goal: easy to read, emoji led, and built for Reels.
+
+Rules:
+- Ten to twelve lines total.
+- Lines 1 through 5 must each start with exactly one safe emoji, followed by a space, then text.
+- Emojis only at the start of lines, not in the middle or end.
+- Single newline between each line.
+- Lines short and punchy.
+
+Safe emojis list for captions:
+🚗 🏡 📈 📉 💰 🔨 🚧 🌟 💡 📍 ✨ 👉 📲 📌 🔁 🏗️ 🛍️
 
 Caption structure:
 
-Line 1: Strong hook with two safe emojis  
-Line 2: Key fact with one emoji  
-Line 3: Local impact with one emoji  
-Line 4: Why it matters with one emoji  
-Line 5: Helpful detail with one emoji  
-Line 6: Credit line in this exact format:
+Line 1: Emoji at start plus strong hook.
+Line 2: Emoji at start plus key fact.
+Line 3: Emoji at start plus local impact for Indian Land or Lancaster.
+Line 4: Emoji at start plus why it matters for buyers, sellers or investors.
+Line 5: Emoji at start plus helpful detail, tip or timing note.
+Line 6: Credit line in this exact format with no emoji:
 Source: WSOC TV
-(Replaced with the correct outlet.)
+(Replace WSOC TV with the correct outlet name for that story.)
 
-Then include this CTA block:
+Then the CTA block, exactly as written:
 
 Thinking about buying, building, investing or selling?
 👉 DM me
 📲 Text Brian 704-677-9191
-Save this for later and share with a friend who needs to see it.
+📌🔁 Save this for later and share with a friend who needs to see it.
 
-Optional line:
-More local updates coming soon.
+Do not include any extra CTA lines.
+Do not add a “more local updates coming soon” line.
 
 Hashtags
-Use relevant local or story tags first.
-Always append these three at the end:
+The final line of the caption must be hashtags only.
+Start with relevant local or story specific tags (for example #indianland or #lancastersc when they apply).
+After any local or story tags, always append these three static tags at the end, in this order:
 #itstartsathome #hgpg #realbrokerllc
 
 Blog title
 Eight to fourteen words.
 Title Case.
-Keyword friendly.
+Clear, factual and keyword friendly.
+Include local terms when natural, such as Indian Land, Lancaster County or corridor names.
 
 Blog post (SEO friendly)
 Three hundred fifty to five hundred words.
 No section headers.
-Short sentences.
-Clean punctuation.
-Clear intro, clear middle, clear ending.
-Local SEO guidelines:
-Use local keywords like Indian Land, Lancaster County, panhandle, key roads and corridors.
-Mention specific neighborhoods or retail areas when relevant.
-Include at least two concrete stats or planning details.
-Explain impact on residents.
-Connect to real estate effects like demand, supply, pricing and neighborhood draw.
-End with a forward looking insight.
-No CTAs.
-No URLs.
-No publisher names.
+Use multiple short paragraphs, not one large block.
+
+Structure:
+- Paragraph 1: What happened and where. One or two sentences that state the core news and mention Indian Land or the Lancaster County panhandle.
+- Paragraph 2: Key details and numbers. Include at least one specific stat, date, dollar amount, project size, or measurable detail.
+- Paragraph 3: Wider context and community impact. Explain what the change means for local residents, traffic, schools, services or amenities.
+- Paragraph 4: Real estate angle. Explain how this development or change may affect demand, supply, pricing, neighborhood appeal or long term value.
+- Paragraph 5: Forward looking insight. Give a short, practical outlook on how this might shape the area over the next few years.
+
+SEO guidelines:
+Use local keywords naturally, such as Indian Land, Lancaster County, the panhandle and key road names like Highway 521 when relevant.
+Mention specific neighborhoods, corridors, business areas or school zones when they are part of the story.
+Include at least two concrete local stats, project details or planning references.
+Use short sentences and clear punctuation.
+Tone should be helpful, objective and easy to read.
+
+Do not include any CTAs in the blog.
+Do not include URLs.
+Do not mention publisher names.
 
 Source_URL
-Include only if known.
-Omit if unknown.
+Include only when you know the original article link.
+Use a plain text string.
+If the source link is unknown, omit Source_URL completely.
 
 Plagiarism distance
 Do not copy article sentences or structure.
-Rebuild everything in new language.
+Extract facts and rebuild everything in new language with new pacing.
 
-Your response must be one JSON object only. Return three to five stories inside the stories array.
+Your response must be one JSON object only.
+Return three to five stories inside the stories array, following all rules above.
 """
 
 
@@ -165,7 +199,6 @@ def call_claude_for_stories() -> dict:
         "content-type": "application/json"
     }
 
-    # Correct model for Haiku 4.5
     body = {
         "model": "claude-3-5-haiku-20241022",
         "max_tokens": 6000,
@@ -182,22 +215,25 @@ def call_claude_for_stories() -> dict:
 
     data = response.json()
 
-    # Extract text blocks
     raw_text = ""
     for block in data.get("content", []):
         if block.get("type") == "text":
             raw_text += block.get("text", "")
 
-    # CLEAN JSON BEFORE LOADING
     cleaned = clean_json_text(raw_text)
 
     try:
         parsed = json.loads(cleaned)
     except Exception as e:
-        raise RuntimeError(f"Claude returned non-parseable JSON.\nRaw cleaned text:\n{cleaned}\nError: {e}")
+        raise RuntimeError(
+            f"Claude returned non-parseable JSON.\nRaw cleaned text:\n{cleaned}\nError: {e}"
+        )
 
     if "stories" not in parsed or not isinstance(parsed["stories"], list):
         raise RuntimeError(f"JSON missing stories array: {parsed}")
+
+    if not parsed["stories"]:
+        raise RuntimeError("JSON contains an empty stories array.")
 
     return parsed
 
