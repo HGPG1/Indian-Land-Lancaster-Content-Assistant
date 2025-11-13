@@ -1,8 +1,9 @@
-#Last Updated 11-13-25-10:55am
+#Last Updated 11-13-25-11:20am
 
 import os
 import json
 import requests
+import re
 
 ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
 
@@ -12,6 +13,14 @@ def get_env(name: str) -> str:
     if not value:
         raise RuntimeError(f"Missing required env var: {name}")
     return value
+
+
+def clean_json_text(text: str) -> str:
+    # Remove all control characters that cause JSONDecodeError
+    text = re.sub(r"[\x00-\x1F\x7F]", "", text)
+    # Remove null bytes if present
+    text = text.replace("\u0000", "")
+    return text
 
 
 def build_system_prompt() -> str:
@@ -156,7 +165,7 @@ def call_claude_for_stories() -> dict:
         "content-type": "application/json"
     }
 
-    # Haiku 4.5 model ID
+    # Correct model for Haiku 4.5
     body = {
         "model": "claude-3-5-haiku-20241022",
         "max_tokens": 6000,
@@ -172,19 +181,23 @@ def call_claude_for_stories() -> dict:
         raise RuntimeError(f"Claude API error: {response.status_code} {response.text}")
 
     data = response.json()
-    text = ""
 
+    # Extract text blocks
+    raw_text = ""
     for block in data.get("content", []):
         if block.get("type") == "text":
-            text += block.get("text", "")
+            raw_text += block.get("text", "")
+
+    # CLEAN JSON BEFORE LOADING
+    cleaned = clean_json_text(raw_text)
 
     try:
-        parsed = json.loads(text)
+        parsed = json.loads(cleaned)
     except Exception as e:
-        raise RuntimeError(f"Claude did not return valid JSON. Raw text:\n{text}\nError: {e}")
+        raise RuntimeError(f"Claude returned non-parseable JSON.\nRaw cleaned text:\n{cleaned}\nError: {e}")
 
     if "stories" not in parsed or not isinstance(parsed["stories"], list):
-        raise RuntimeError(f"JSON missing stories field: {parsed}")
+        raise RuntimeError(f"JSON missing stories array: {parsed}")
 
     return parsed
 
